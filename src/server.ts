@@ -37,11 +37,17 @@ const initDB = async()=>{
 }
 initDB();
 
+//middleware
+const loger = (req:express.Request,res:express.Response,next:express.NextFunction)=>{
+  console.log(`${req.method} ${req.path}`);
+  next();
+}
+
 //perser
 app.use(express.json());
 
 
-app.get('/', (req, res) => {
+app.get('/',loger, (req, res) => {
   res.send('Hello World333!');
 });
 
@@ -144,8 +150,8 @@ app.delete('/users/:id', async (req, res) => {
 
   try {
     const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
-
-    if (result.rows.length === 0) {
+   console.log('result:', result);
+    if (result.rowCount === 0) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -164,6 +170,54 @@ app.delete('/users/:id', async (req, res) => {
     });
   }
 });
+
+// todos api'es
+app.post('/todos', async (req, res) => {
+  const { user_id, title } = req.body;
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO todos (user_id, title)
+       VALUES ($1, $2)   RETURNING *`,
+      [user_id, title]
+    );
+
+    return res.status(201).json({
+      success: true,
+      data: result.rows[0],
+      message: "Todo created successfully",
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: err.message || "Internal Server Error",
+    });
+  }
+});
+
+app.get('/todos', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM todos');
+    return res.status(200).json({
+      success: true,
+      data: result.rows,
+      message: "Todos retrieved successfully",
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: err.message || "Internal Server Error",
+    });
+  }
+});
+
+app.use((req,res)=>{
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+    path: req.path
+  })
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
