@@ -1,8 +1,9 @@
 import express from 'express';
 
 import config from './config';
-import initDB from './config/db';
-
+import initDB, { pool } from './config/db';
+import loger from './config/logger';
+import { userRoutes } from './modules/user/user.routes';
 
 
 
@@ -13,11 +14,6 @@ const port = config.port;
 
 initDB();
 
-//middleware
-const loger = (req:express.Request,res:express.Response,next:express.NextFunction)=>{
-  console.log(`${req.method} ${req.path}`);
-  next();
-}
 
 //perser
 app.use(express.json());
@@ -27,45 +23,26 @@ app.get('/',loger, (req, res) => {
   res.send('Hello World333!');
 });
 
-app.post('/users', async (req, res) => {
-  const { name, email, age, phone } = req.body;
 
-  try {
-    const result = await pool.query(
-      `INSERT INTO users (name, email, age, phone)
-       VALUES ($1, $2, $3, $4)
-       RETURNING *`,
-      [name, email, age, phone]
-    );
+app.use("/users",userRoutes)
 
-    return res.status(201).json({
-      success: true,
-      data: result.rows[0],
-      message: "User created successfully",
-    });
-  } catch (err: any) {
-    return res.status(500).json({
-      success: false,
-      message: err.message || "Internal Server Error",
-    });
-  }
-});
+// app.post('/users', );
 
-app.get('/users', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM users');
-    return res.status(200).json({
-      success: true,
-      data: result.rows,
-      message: "Users retrieved successfully",
-    });
-  } catch (err: any) {
-    return res.status(500).json({
-      success: false,
-      message: err.message || "Internal Server Error",
-    });
-  }
-});
+// app.get('/users', async (req, res) => {
+//   try {
+//     const result = await pool.query('SELECT * FROM users');
+//     return res.status(200).json({
+//       success: true,
+//       data: result.rows,
+//       message: "Users retrieved successfully",
+//     });
+//   } catch (err: any) {
+//     return res.status(500).json({
+//       success: false,
+//       message: err.message || "Internal Server Error",
+//     });
+//   }
+// });
 
 app.get('/users/:id', async (req, res) => {
   const { id } = req.params;
