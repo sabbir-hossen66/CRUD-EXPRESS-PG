@@ -3,22 +3,11 @@ import { pool } from '../../config/db';
 import { userController } from './user.controller';
 const router =express.Router();
 
-router.post("/",userController.createUser);
+router.post("/", userController.createUser);
 
-router.get("/", async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM users');
-    return res.status(200).json({
-      success: true,
-      data: result.rows,
-      message: "Users retrieved successfully",
-    });
-  } catch (err: any) {
-    return res.status(500).json({
-      success: false,
-      message: err.message || "Internal Server Error",
-    });
-  }
-})
+router.get("/", userController.getUser);
+router.get("/:id", userController.getSingleUser);
+router.put("/:id", userController.updateUser);
+router.delete("/:id", userController.deleteUser);
 
 export const userRoutes = router
