@@ -2,7 +2,7 @@ import express from 'express';
 
 import config from './config';
 import initDB, { pool } from './config/db';
-import loger from './config/logger';
+import loger from './middleware/logger';
 import { userRoutes } from './modules/user/user.routes';
 import { userServices } from './modules/user/user.service';
 import { authRoutes } from './modules/auth/auth.routes';
