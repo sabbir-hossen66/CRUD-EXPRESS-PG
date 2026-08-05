@@ -5,6 +5,7 @@ import initDB, { pool } from './config/db';
 import loger from './config/logger';
 import { userRoutes } from './modules/user/user.routes';
 import { userServices } from './modules/user/user.service';
+import { authRoutes } from './modules/auth/auth.routes';
 
 
 
@@ -26,6 +27,7 @@ app.get('/',loger, (req, res) => {
 
 
 app.use("/users",userRoutes)
+app.use("/auth", authRoutes)
 
 // app.post('/users', );
 
