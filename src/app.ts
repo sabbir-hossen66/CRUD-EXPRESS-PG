@@ -18,7 +18,7 @@ app.use(express.json());
 
 
 app.get('/',loger, (req, res) => {
-  res.send('Hello World333!');
+  res.send('Todo Backend get ready!');
 });
 
 
