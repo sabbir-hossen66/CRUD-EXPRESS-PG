@@ -4,7 +4,7 @@ import config from '../config';
 import jwt from 'jsonwebtoken';
 
 //higher order function
-const auth = () => {
+const auth = (...roles: string[]) => {
     return async (req: Request, res: Response, next: NextFunction) => {
 try{
         const token = req.headers.authorization;
@@ -14,8 +14,17 @@ try{
                 message: "Unauthorized: No token provided",
             });             
         }
-        const decoded= jwt.verify(token, config.jwtSecret);
-        req.user =decoded as jwt.JwtPayload; 
+        const decoded= jwt.verify(token, config.jwtSecret) as jwt.JwtPayload;
+        console.log(decoded);
+        req.user =decoded ; 
+       
+        if(roles.length && !roles.includes(decoded.role)) {
+            return res.status(403).json({
+                success: false,
+                message: "Forbidden: You do not have the required role",
+            });
+        }
+
         next();
 }
 

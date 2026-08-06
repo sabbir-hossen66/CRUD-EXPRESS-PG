@@ -18,7 +18,7 @@ const loginUser=async(email:string, password:string)=>{
     }
 
     const secret = config.jwtSecret || 'default_secret'; // Use the secret from environment variables or a default
-    const token = jwt.sign({name:user.name,email:user.email},secret,{
+    const token = jwt.sign({name:user.name,email:user.email,role:user.role},secret,{
         expiresIn: '7d'
     })
     console.log("Token generated:", token); // Log the generated token for debugging purposes
