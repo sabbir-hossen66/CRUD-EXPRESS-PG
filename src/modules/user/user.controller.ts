@@ -1,4 +1,4 @@
-import { pool } from '../../config/db';
+
 import { Request, Response } from 'express';
 import { userServices } from './user.service';
 
@@ -88,7 +88,7 @@ const { name, email, age, phone } = req.body;
   }
 }
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
